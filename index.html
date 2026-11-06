@@ -9,20 +9,34 @@
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
-  html, body { margin: 0; height: 100%; background: #1a3c5e; }
+  html, body { margin: 0; height: 100%; background: #1a3c5e; font-family: Arial, sans-serif; }
   iframe { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; background: #eef2f6; }
-  .err { color: #fff; font: 16px Arial, sans-serif; padding: 30px; display: none; }
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+         background: #1a3c5e; color: #fff; display: none; align-items: center; gap: 12px; z-index: 2; font-size: 14px; }
+  .bar a { background: #f2b705; color: #1a1a1a; padding: 10px 14px; text-decoration: none; font-weight: bold; white-space: nowrap; }
 </style>
 </head>
 <body>
-<!-- ===== CHANGE ONLY THIS LINE: paste your PO Viewer web app URL (ends with /exec) ===== -->
-<iframe id="app" src="https://script.google.com/macros/s/AKfycbyTz7uFNsDT9UrC6IFYvnRCodigvYn2sIRatmvGVZJ4XzEO6yxXRhXQFmNZcBI4k2PF/exec" allow="clipboard-write"></iframe>
-<div class="err" id="err">Set the web app URL in index.html first.</div>
+<!-- ===== CHANGE ONLY THIS LINE: your PO Viewer web app URL (ends with /exec) ===== -->
+<script>var APP_URL = 'https://script.google.com/macros/s/AKfycbyTz7uFNsDT9UrC6IFYvnRCodigvYn2sIRatmvGVZJ4XzEO6yxXRhXQFmNZcBI4k2PF/exec';</script>
+
+<iframe id="app" allow="clipboard-write"></iframe>
+<div class="bar" id="bar">
+  <span>Not loading on this phone?</span>
+  <a id="direct" href="#">Open directly</a>
+</div>
+
 <script>
-  if (document.getElementById('app').src.indexOf('/exec') < 0) {
-    document.getElementById('app').style.display = 'none';
-    document.getElementById('err').style.display = 'block';
-  }
+  var frame = document.getElementById('app');
+  var bar = document.getElementById('bar');
+  document.getElementById('direct').href = APP_URL;
+
+  // Try the app inside the frame; if it has not loaded in 8 seconds, show the backup button.
+  var loaded = false;
+  frame.onload = function () { loaded = true; };
+  frame.src = APP_URL;
+  setTimeout(function () { bar.style.display = 'flex'; }, loaded ? 15000 : 8000);
+
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
 </body>
