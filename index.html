@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1a3c5e">
+<title>PO Viewer - Pioneer Cranes</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  html, body { margin: 0; height: 100%; background: #1a3c5e; }
+  iframe { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; background: #eef2f6; }
+  .err { color: #fff; font: 16px Arial, sans-serif; padding: 30px; display: none; }
+</style>
+</head>
+<body>
+<!-- ===== CHANGE ONLY THIS LINE: paste your PO Viewer web app URL (ends with /exec) ===== -->
+<iframe id="app" src="PASTE_YOUR_WEB_APP_URL_HERE" allow="clipboard-write"></iframe>
+<div class="err" id="err">Set the web app URL in index.html first.</div>
+<script>
+  if (document.getElementById('app').src.indexOf('/exec') < 0) {
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('err').style.display = 'block';
+  }
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+</script>
+</body>
+</html>
