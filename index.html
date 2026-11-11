@@ -10,23 +10,60 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
   html, body { margin: 0; height: 100%; background: #1a3c5e; color: #fff; font-family: Arial, sans-serif; }
-  .c { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 16px; text-align: center; padding: 20px; }
-  a { background: #f2b705; color: #1a1a1a; padding: 12px 18px; text-decoration: none; font-weight: bold; }
+  .c { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100%;
+       gap: 14px; text-align: center; padding: 24px; box-sizing: border-box; }
+  img { width: 96px; height: 96px; }
+  h1 { margin: 0; font-size: 22px; }
+  p { margin: 0; opacity: .85; font-size: 15px; max-width: 320px; line-height: 1.5; }
+  .btn { display: block; width: 240px; padding: 14px; font-weight: bold; font-size: 16px; text-decoration: none;
+         border: 0; cursor: pointer; text-align: center; }
+  .open { background: #f2b705; color: #1a1a1a; }
+  .inst { background: #fff; color: #1a3c5e; display: none; }
+  .tip { font-size: 13px; opacity: .75; display: none; }
 </style>
 </head>
 <body>
 <!-- ===== CHANGE ONLY THIS LINE: your PO Viewer web app URL (ends with /exec) ===== -->
-<script>var APP_URL = 'https://script.google.com/macros/s/AKfycbzLA-qmSTRrziwGKKiAvv8p9oGZKtTroA577xTAtLcC7sgYO5LLV9TlBl1LO3WAn8mE/exec';</script>
+<script>var APP_URL = 'https://script.google.com/macros/s/AKfycbyw7N8W0iwxXiKiHiE1RVk9YZeb9Gs0YVSqxDCcVAG6QCECfkLZ9uNE2o40mPH1H6Ke/exec';</script>
 
 <div class="c">
-  <div>Opening PO Viewer…</div>
-  <a id="go" href="#">Open PO Viewer</a>
+  <img src="icon-192.png" alt="">
+  <h1>PO Viewer</h1>
+  <p>Pioneer Cranes &amp; Elevators — purchase orders and material status</p>
+  <button class="btn inst" id="installBtn">⬇ Install app</button>
+  <a class="btn open" id="openBtn" href="#">Open PO Viewer</a>
+  <div class="tip" id="tipAndroid">Install not showing? Tap ⋮ (top right) → “Install app” or “Add to Home screen”.</div>
+  <div class="tip" id="tipIos">iPhone: tap Share ⬆ → “Add to Home Screen”.</div>
 </div>
 
 <script>
+  document.getElementById('openBtn').href = APP_URL;
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
-  document.getElementById('go').href = APP_URL;
-  setTimeout(function () { window.location.replace(APP_URL); }, 300);   // go straight to the app
+
+  // Opened from the installed app icon → go straight to PO Viewer.
+  var isApp = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  if (isApp) {
+    window.location.replace(APP_URL);
+  } else {
+    // Opened in the browser → stay on this page so the phone can offer "Install app".
+    var isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    document.getElementById(isIos ? 'tipIos' : 'tipAndroid').style.display = 'block';
+
+    var deferred = null;
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      deferred = e;
+      document.getElementById('installBtn').style.display = 'block';
+    });
+    document.getElementById('installBtn').addEventListener('click', function () {
+      if (!deferred) return;
+      deferred.prompt();
+      deferred.userChoice.then(function () { deferred = null; document.getElementById('installBtn').style.display = 'none'; });
+    });
+    window.addEventListener('appinstalled', function () {
+      document.getElementById('installBtn').style.display = 'none';
+    });
+  }
 </script>
 </body>
 </html>
